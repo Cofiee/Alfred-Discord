@@ -1,3 +1,5 @@
 {
-    "LogChannelName": "logi-bot-01"
+    "LogChannelName": "logi-bot-01",
+
+    "TicketChannelName": "management-ticket"
 }

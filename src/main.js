@@ -1,22 +1,23 @@
 const Discord = require("discord.js");
 const auth = require("../confs/auth.json");
 const settings = require("../confs/settings.json");
+const ticketCreator = require("./ticket_system/ticketCreator.json");
 const client = new Discord.Client();
 const channels = client.channels.cache;
 
 client.on("ready", () => {
+    prepareTicketSystem();
     console.log("I am ready!");
 });
-/*
-client.on("message", (message) => {
-    if(message.channel.name === "testybota" &&
-        message.author.bot === false)
-    {
-        message.reply("I'm here to serve");
-        myServerLog("Alfred replied on " + message.author.username + " message at " + message.channel.name)
-    }
-});
-*/
+
+function myServerLog(activity)
+{
+    let targetChannel = channels.find(channel => channel.name === settings.LogChannelName);
+    let today = new Date();
+    let date = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDay() + " " + today.getUTCHours() + ":" + today.getUTCMinutes() + ":" + today.getUTCSeconds() + " UTC - "
+    targetChannel.send(date + activity);
+}
+
 client.on("message", async (message) => {
     if(message.channel.name === "testybota" &&
         message.author.bot === false &&
@@ -30,11 +31,36 @@ client.on("message", async (message) => {
     }
 });
 
-function myServerLog(activity)
-{
-    let targetChannel = channels.find(channel => channel.name === settings.LogChannelName);
-    let today = new Date();
-    let date = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDay() + " " + today.getUTCHours() + ":" + today.getUTCMinutes() + ":" + today.getUTCSeconds() + " UTC - "
-    targetChannel.send(date + activity);
+var prepareTicketSystem = async () => {
+    const targetChannel = channels.find(channel => channel.name === settings.TicketChannelName);
+    if(targetChannel.type === "text")
+    {
+        targetChannel.messages.fetch().then(messages => {
+            targetChannel.bulkDelete(messages);
+        }).catch(err => {
+            console.log('Error while doing Bulk Delete');
+            console.log(err);
+        });
+        let createTicketEmbeded = new Discord.MessageEmbed();
+        createTicketEmbeded.setTitle(ticketCreator.title);
+        createTicketEmbeded.setDescription(ticketCreator.description);
+        createTicketEmbeded.setColor(ticketCreator.color);
+        targetChannel.send(createTicketEmbeded).then(message => {
+            message.react(ticketCreator.reaction).catch(err => {
+                console.log('Error reacting');
+                console.log(err);
+            });
+        });
+    }
 }
+//TODO: dokonczyc implementacje tworzenia ticketu na reakcje
+/*
+client.on("messageReactionAdd", async (reaction) => {
+    let targetChannel = reaction.message.channel;
+    if(targetChannel.name === settings.TicketChannelName && reaction.users)
+    {
+        
+    }
+});
+*/
 client.login(auth.token);
