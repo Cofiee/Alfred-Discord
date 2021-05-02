@@ -4,15 +4,17 @@ const settings = require("../confs/settings.json");
 const ticketCreator = require("./ticket_system/ticketCreator.json");
 const client = new Discord.Client();
 const channels = client.channels.cache;
+const ticketManagerBuilder = require("./ticket_system/ticketManager.js");
+const ticketManager = new ticketManagerBuilder(Discord, settings, ticketCreator, channels);
 
 client.on("ready", () => {
-    prepareTicketSystem();
+    ticketManager.prepareTicketSystem();
     console.log("I am ready!");
 });
 
 function myServerLog(activity)
 {
-    let targetChannel = channels.find(channel => channel.name === settings.LogChannelName);
+    let targetChannel = conf.channels.find(channel => channel.name === settings.LogChannelName);
     let today = new Date();
     let date = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDay() + " " + today.getUTCHours() + ":" + today.getUTCMinutes() + ":" + today.getUTCSeconds() + " UTC - "
     targetChannel.send(date + activity);
@@ -23,14 +25,26 @@ client.on("message", async (message) => {
         message.author.bot === false &&
         message.type === "DEFAULT" &&
         message.mentions.members.size > 0)
-    {
-        await setTimeout(() => {
-            message.delete();
-          }, 5000);
-        myServerLog("Alfred deleted " + message.author.username + " mention at \"" + message.channel.name + "\"");
+    {   
+        const re = / +/gm;
+        let interval = 3000;/*1000 * 60 * 20;*/ //milisec * sec * minutes
+        let splittedArr = message.content.split(re);   //TODO dodac obietnice bo sie wyjebie node.js
+        //console.log(message.mentions.members.size);
+        //console.log(splittedArr.length);
+        if(splittedArr.length === message.mentions.members.size)
+        {
+            await setTimeout(() => {
+                message.delete();
+              }, interval); 
+            myServerLog("Alfred deleted " + message.author.username + " mention at \"" + message.channel.name + "\""
+            + "\n Members length: " + message.mentions.members.size + " Content length: " + splittedArr.length);
+            // ^ wywala sie bo obietnica
+        }
     }
 });
 
+
+/*
 var prepareTicketSystem = async () => {
     const targetChannel = channels.find(channel => channel.name === settings.TicketChannelName);
     if(targetChannel.type === "text")
@@ -53,6 +67,7 @@ var prepareTicketSystem = async () => {
         });
     }
 }
+//*/
 //TODO: dokonczyc implementacje tworzenia ticketu na reakcje
 /*
 client.on("messageReactionAdd", async (reaction) => {
