@@ -14,7 +14,7 @@ client.on("ready", () => {
 
 function myServerLog(activity)
 {
-    let targetChannel = conf.channels.find(channel => channel.name === settings.LogChannelName);
+    let targetChannel = channels.find(channel => channel.name === settings.LogChannelName);
     let today = new Date();
     let date = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDay() + " " + today.getUTCHours() + ":" + today.getUTCMinutes() + ":" + today.getUTCSeconds() + " UTC - "
     targetChannel.send(date + activity);
