@@ -4,6 +4,8 @@ module.exports = function (discord, settings, client, channels) {
     this.ticketCreator = require("./ticketCreator.json");
     this.channels = channels;
 
+    this.ticketList;
+
     this.prepareTicketSystem = async () => {
         const targetChannel = this.channels.find(channel => channel.name === this.settings.TicketChannelName);
         if(targetChannel.type === "text")
