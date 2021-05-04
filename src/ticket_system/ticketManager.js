@@ -1,7 +1,7 @@
-module.exports = function (discord, settings, ticketCreator, channels) {
+module.exports = function (discord, settings, client, channels) {
     this.Discord = discord;
     this.settings = settings;
-    this.ticketCreator = ticketCreator;
+    this.ticketCreator = require("./ticketCreator.json");
     this.channels = channels;
 
     this.prepareTicketSystem = async () => {
@@ -24,6 +24,13 @@ module.exports = function (discord, settings, ticketCreator, channels) {
                     console.log(err);
                 });
             });
-        }//*/
+        }
     }
+
+    client.on("reaction", reaction => {
+        if(reaction.channel.name === this.settings.TicketChannelName)
+        {
+            
+        }
+    });
 }

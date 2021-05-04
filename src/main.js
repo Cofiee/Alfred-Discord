@@ -1,11 +1,11 @@
 const Discord = require("discord.js");
 const auth = require("../confs/auth.json");
 const settings = require("../confs/settings.json");
-const ticketCreator = require("./ticket_system/ticketCreator.json");
 const client = new Discord.Client();
 const channels = client.channels.cache;
+
 const ticketManagerBuilder = require("./ticket_system/ticketManager.js");
-const ticketManager = new ticketManagerBuilder(Discord, settings, ticketCreator, channels);
+const ticketManager = new ticketManagerBuilder(Discord, settings, client, channels);
 
 client.on("ready", () => {
     ticketManager.prepareTicketSystem();
@@ -27,7 +27,7 @@ client.on("message", async (message) => {
         message.mentions.members.size > 0)
     {   
         const re = / +/gm;
-        let interval = 3000;/*1000 * 60 * 20;*/ //milisec * sec * minutes
+        let interval = 1000 * 60 * 20;//*/ //milisec * sec * minutes
         let splittedArr = message.content.split(re);   //TODO dodac obietnice bo sie wyjebie node.js
         //console.log(message.mentions.members.size);
         //console.log(splittedArr.length);
