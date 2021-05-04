@@ -4,6 +4,8 @@ module.exports = function (discord, settings, ticketCreator, channels) {
     this.ticketCreator = ticketCreator;
     this.channels = channels;
 
+    this.ticketList;
+
     this.prepareTicketSystem = async () => {
         const targetChannel = this.channels.find(channel => channel.name === this.settings.TicketChannelName);
         if(targetChannel.type === "text")
@@ -25,5 +27,9 @@ module.exports = function (discord, settings, ticketCreator, channels) {
                 });
             });
         }//*/
+    }
+
+    this.createTicket = async () => {
+        
     }
 }
