@@ -21,7 +21,7 @@ function myServerLog(activity)
 }
 
 client.on("message", async (message) => {
-    if(message.channel.name === "testybota" &&
+    if(message.channel.name === settings.TagClearingChannelName &&
         message.author.bot === false &&
         message.type === "DEFAULT" &&
         message.mentions.members.size > 0)
