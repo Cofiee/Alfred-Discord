@@ -28,7 +28,6 @@ module.exports = function (discord, settings, client, channels) {
             });
         }
     }
-
     client.on("reaction", reaction => {
         if(reaction.channel.name === this.settings.TicketChannelName)
         {
