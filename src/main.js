@@ -28,18 +28,19 @@ client.on("message", async (message) => {
     {   
         //Regexe jedna lub wiecej spacji
         const re = / +/gm;
-        let interval = 1000 * 60 * 20;//*/ //milisec * sec * minutes
-        let splittedArr = message.content.split(re);   //TODO dodac obietnice bo sie wyjebie node.js
-        //console.log(message.mentions.members.size);
-        //console.log(splittedArr.length);
+        let interval = 1000 * 60 * 30; //milisec * sec * minutes
+        let splittedArr = message.content.split(re);
         if(splittedArr.length === message.mentions.members.size)
         {
             await setTimeout(() => {
-                message.delete();
+                message.delete().catch(error => {
+                    if (error.code !== 10008) {
+                        console.error('Failed to delete the message:', error);
+                    }
+                });
               }, interval); 
             myServerLog("Alfred deleted " + message.author.username + " mention at \"" + message.channel.name + "\""
             + "\n Members length: " + message.mentions.members.size + " Content length: " + splittedArr.length);
-            // ^ wywala sie bo obietnica
         }
     }
 
