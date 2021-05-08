@@ -1,4 +1,13 @@
-module.exports = function (discord, settings, client, channels) {
+/**
+ * Autor: Cofiee
+ * Wersja: 1.0
+ * Modul odpowiedzialny za dzialanie systemu ticketowego
+ * @param {*} discord 
+ * @param {*} settings 
+ * @param {*} client 
+ * @param {*} channels 
+ */
+module.exports = function(discord, settings, client, channels) {
     this.Discord = discord;
     this.settings = settings;
     this.ticketCreator = require("./ticketCreator.json");
