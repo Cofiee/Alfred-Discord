@@ -17,7 +17,7 @@ module.exports = async (message) => {
         let splittedArr = message.content.split(re);
         if(splittedArr.length === message.mentions.members.size + message.mentions.roles.size)
         {
-            let interval = 100//1000 * 60 * 30; //milisec * sec * minutes
+            let interval = 1000 * 60 * 30; //milisec * sec * minutes
             await setTimeout(() => {
                 message.delete().catch(error => {
                     if (error.code !== 10008) {
