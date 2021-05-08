@@ -1,3 +1,8 @@
+/**
+ * Autor: Cofiee
+ * Wersja: 1.3
+ * Zmienil: Cofiee
+ */
 const Discord = require("discord.js");
 const auth = require("../confs/auth.json");
 const settings = require("../confs/settings.json");
@@ -8,6 +13,8 @@ const channels = client.channels.cache;
 const ticketManagerBuilder = require("./ticket_system/ticketManager.js");
 const ticketManager = new ticketManagerBuilder(Discord, settings, client, channels);
 
+const mentionsCleaner = require("./mentionsCleaner.js");
+
 /**
  * Przygotowywuje bota do dzialania przed zalogowaniem sie
  * Wczytuje komendy dynamicznie z folderu commands
@@ -15,7 +22,7 @@ const ticketManager = new ticketManagerBuilder(Discord, settings, client, channe
  (function ()
  {
      const fs = require('fs');
-     const commandFiles = fs.readFileSync('./commands').filter(file => file.endsWith('.js'));
+     const commandFiles = fs.readdirSync("src\\commands").filter(file => file.endsWith('.js'));
      for(const file of commandFiles)
      {
          const command = require(`./commands/${file}`);
@@ -44,39 +51,24 @@ function myServerLog(activity)
 }
 
 /**
- * Czyszczenie samych wzmianek ludzi lub rol z kamalu
+ * Reakcja na wiadomosci
  */
-client.on("message", async (message) => {
-    if(message.channel.name === settings.TagClearingChannelName &&
-        message.author.bot === false &&
-        message.type === "DEFAULT" &&
-        (message.mentions.members.size > 0 || 
-        message.mentions.roles.size > 0))
-    {   
-        //Regexe jedna lub wiecej spacji
-        const re = / +/gm;
-        let interval = 1000 * 60 * 30; //milisec * sec * minutes
-        let splittedArr = message.content.split(re);
-        if(splittedArr.length === message.mentions.members.size)
-        {
-            await setTimeout(() => {
-                message.delete().catch(error => {
-                    if (error.code !== 10008) {
-                        console.error('Failed to delete the message:', error);
-                    }
-                });
-              }, interval); 
-            myServerLog("Alfred deleted " + message.author.username + " mention at \"" + message.channel.name + "\""
-            + "\n Members length: " + message.mentions.members.size + " Content length: " + splittedArr.length);
-        }
+client.on("message", (message) => {
+    if(!message.content.startsWith(settings.CommandPrefix) || message.author.bot)
+    {
+        let result = mentionsCleaner(message);
+        //if(result !== null) myServerLog(result);
+        return;
     }
-
-    client.on("reaction", reaction => {
-        if(reaction.channel.name === settings.LogChannelName)
-        {
-            
-        }
-    });
+    const args = message.content.slice(settings.CommandPrefix.length).trim().split(/ +/);
+    const commandName = args.shift();
+    if(!client.commands.has(commandName)) return;
+    try{
+        client.commands.get(commandName).execute(message, args);
+    }catch(err){
+        console.error(err);
+        message.reply("Error occured during executing command. Please contact with support.");
+    }
 });
 
 /**
