@@ -3,8 +3,10 @@
  * Wersja: 1.3
  * Zmienil: Cofiee
  */
+require("dotenv").config();
+
 const Discord = require("discord.js");
-const auth = require("../confs/auth.json");
+//const auth = require("../confs/auth.json");
 const settings = require("../confs/settings.json");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -78,5 +80,6 @@ client.on("message", (message) => {
 /**
  * Logowanie bota
  */
-client.login(auth.token);
+//client.login(auth.token);
+client.login(process.env.DISCORD_BOT_TOKEN);
 
