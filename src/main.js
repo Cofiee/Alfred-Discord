@@ -3,10 +3,8 @@
  * Wersja: 1.3
  * Zmienil: Cofiee
  */
-require("dotenv").config();
-
 const Discord = require("discord.js");
-//const auth = require("../confs/auth.json");
+const auth = require("../confs/auth.json");
 const settings = require("../confs/settings.json");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -24,7 +22,7 @@ const lonelyMentionsCleaner = require("./mentionsCleaner.js");
  (function ()
  {
      const fs = require('fs');
-     //const commandFiles = fs.readdirSync("src\\commands").filter(file => file.endsWith('.js'));
+    
      const commandFiles = fs.readdirSync('src/commands').filter(file => file.endsWith('.js'));
      for(const file of commandFiles)
      {
@@ -80,6 +78,5 @@ client.on("message", (message) => {
 /**
  * Logowanie bota
  */
-//client.login(auth.token);
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(auth.token);
 
