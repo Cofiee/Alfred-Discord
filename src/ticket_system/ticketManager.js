@@ -58,6 +58,7 @@ module.exports = function(discord, settings, client, channels) {
      * Tworzy kanal tekstowy sluzaczy do obslugi zgloszenia
      * TODO: PRZEROBIC NA COLLECTOR REAKCJI
      */
+    /*
     client.on('messageReactionAdd', (reaction, user) => {
         if(reaction.me === true) 
             return;
@@ -100,7 +101,7 @@ module.exports = function(discord, settings, client, channels) {
             });
         reaction.remove().catch(err => console.error('Failed to clear reactions'));
     });
-
+    */
 
 
     /*
