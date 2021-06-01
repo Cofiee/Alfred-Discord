@@ -13,7 +13,7 @@ const channels = client.channels.cache;
 const ticketManagerBuilder = require("./ticket_system/ticketManager.js");
 const ticketManager = new ticketManagerBuilder(Discord, settings, client, channels);
 
-const mentionsCleaner = require("./mentionsCleaner.js");
+const lonelyMentionsCleaner = require("./mentionsCleaner.js");
 
 /**
  * Przygotowywuje bota do dzialania przed zalogowaniem sie
@@ -22,7 +22,8 @@ const mentionsCleaner = require("./mentionsCleaner.js");
  (function ()
  {
      const fs = require('fs');
-     const commandFiles = fs.readdirSync("src\\commands").filter(file => file.endsWith('.js'));
+    
+     const commandFiles = fs.readdirSync('src/commands').filter(file => file.endsWith('.js'));
      for(const file of commandFiles)
      {
          const command = require(`./commands/${file}`);
@@ -52,11 +53,14 @@ function myServerLog(activity)
 
 /**
  * Reakcja na wiadomosci
+ * Wykona jedna z ponizszych reakcji:
+ * Usunie samotna wzmianke
+ * Wykona komende
  */
 client.on("message", (message) => {
     if(!message.content.startsWith(settings.CommandPrefix) || message.author.bot)
     {
-        let result = mentionsCleaner(message);
+        let result = lonelyMentionsCleaner(message);
         //if(result !== null) myServerLog(result);
         return;
     }
