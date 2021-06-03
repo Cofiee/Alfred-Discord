@@ -1,5 +1,3 @@
-const { User } = require("discord.js");
-
 /**
  * Autor: Cofiee
  * Wersja: 1.0
@@ -17,7 +15,7 @@ module.exports = function(discord, settings, client, channels) {
     this.channels = channels;
 
     this.ticketCreationMessage = null;
-    this.ticketList = [];
+    this.ticketList = new this.Discord.Collection();
     this.ticketCollectorList = [];
 
     /**
@@ -44,22 +42,33 @@ module.exports = function(discord, settings, client, channels) {
                 console.log(err);
             });
         });
-        /*
+        ///*
         const filter = (reaction, user) => {
             return reaction.emoji.name === "📩";
         };
         this.ticketCreationMessage.awaitReactions(filter)
-        */
+        //*/
     }
 
-
     /**
-     * Listener reaguje na reakcje na wiadomosci this.ticketCreationMessage
+     * Listener reaguje na reakcje na wiadomosci
      * Tworzy kanal tekstowy sluzaczy do obslugi zgloszenia
      * TODO: PRZEROBIC NA COLLECTOR REAKCJI
      */
-    /*
     client.on('messageReactionAdd', (reaction, user) => {
+        if(reaction.me === true) 
+            return;
+        this.createNewTicketChannel(reaction, user);
+        this.deleteTicketChannel(reaction, user);
+    });
+
+    /**
+     * 
+     * @param {*} reaction 
+     * @param {*} user 
+     * @returns 
+     */
+    this.createNewTicketChannel = (reaction, user) => {
         if(reaction.me === true) 
             return;
         if(this.ticketCreationMessage === null) 
@@ -92,7 +101,6 @@ module.exports = function(discord, settings, client, channels) {
                     });
                     //const collector = this.ticketReactionsCollectorCreator(message);
                     //this.ticketCollectorList.push(collector);
-
                 });
             })
             .catch(err => {
@@ -100,9 +108,30 @@ module.exports = function(discord, settings, client, channels) {
                 console.error(err);
             });
         reaction.remove().catch(err => console.error('Failed to clear reactions'));
-    });
-    */
+    }
 
+    /**
+     * Usuwa kanal z listy ticketow
+     * @param {*} reaction 
+     * @param {*} user 
+     * @returns 
+     */
+    this.deleteTicketChannel = (reaction, user) => {
+        if(reaction.me === true)
+            return;
+        if(!this.ticketList.has(reaction.message)) return;
+        const ticketHeadMessage = this.ticketList.get(reaction.message);
+        const ticketChannel = ticketHeadMessage.channel;
+        try 
+        {
+            ticketChannel.delete();
+            this.ticketList.delete(ticketHeadMessage);
+        } catch (error) 
+        {
+            console.log(error);
+            console.log("Error ocured while deleting ticket channel");
+        }
+    }
 
     /*
     this.ticketReactionsCollectorCreator = (message) => {
