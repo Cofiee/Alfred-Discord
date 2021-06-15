@@ -15,7 +15,8 @@ module.exports = function(discord, settings, client, channels) {
     this.channels = channels;
 
     this.ticketCreationMessage = null;
-    this.ticketList = new this.Discord.Collection();
+    //this.ticketList = new this.Discord.Collection();
+    this.ticketList = [];
     this.ticketCollectorList = [];
 
     /**
@@ -46,7 +47,7 @@ module.exports = function(discord, settings, client, channels) {
         const filter = (reaction, user) => {
             return reaction.emoji.name === "📩";
         };
-        this.ticketCreationMessage.awaitReactions(filter)
+        //this.ticketCreationMessage.awaitReactions(filter)
         //*/
     }
 
@@ -82,13 +83,29 @@ module.exports = function(discord, settings, client, channels) {
         }
         const guild = reaction.message.guild;
         const everyoneRole = guild.roles.everyone;
-        guild.channels.create(user.username, 'text')
+        guild.channels.create(user.username, {
+            type: 'text',
+            parent: this.ticketCreator.ticket_system_cat_id,
+            PermissionOverwrites: [
+                {
+                    id: everyoneRole,
+                    deny: ['VIEW_CHANNEL']
+                },
+                {
+                    id: user.id,
+                    allow: ['VIEW_CHANNEL']
+                },
+                {
+                    id: client.id,
+                    allow: ['VIEW_CHANNEL']
+                },
+                {
+                    id: this.responsible_role_id,
+                    allow: ['VIEW_CHANNEL']
+                }
+            ]
+        })
             .then(c => {
-                c.setParent(this.ticketCreator.ticket_system_cat_id);
-                c.overwritePermissions(user.id, {VIEW_CHANNEL: true});
-                c.overwritePermissions(client.id, {VIEW_CHANNEL: true});
-                c.overwritePermissions(this.ticketSettings.responsible_role_id, {VIEW_CHANNEL: true}); //Czlonek zarzadu
-                c.overwritePermissions(everyoneRole, {VIEW_CHANNEL: false});
                 let createTicketEmbeded = new this.Discord.MessageEmbed();
                 createTicketEmbeded.setTitle("PLACEHOLDER TITLE");
                 createTicketEmbeded.setDescription(this.ticketSettings.welcome_message);
@@ -99,8 +116,6 @@ module.exports = function(discord, settings, client, channels) {
                         console.log("Error while reacting ticket");
                         console.log(err);
                     });
-                    //const collector = this.ticketReactionsCollectorCreator(message);
-                    //this.ticketCollectorList.push(collector);
                 });
             })
             .catch(err => {
@@ -108,6 +123,7 @@ module.exports = function(discord, settings, client, channels) {
                 console.error(err);
             });
         reaction.remove().catch(err => console.error('Failed to clear reactions'));
+        this.ticketCreationMessage.react(this.ticketCreator.reaction);
     }
 
     /**
@@ -119,13 +135,19 @@ module.exports = function(discord, settings, client, channels) {
     this.deleteTicketChannel = (reaction, user) => {
         if(reaction.me === true)
             return;
-        if(!this.ticketList.has(reaction.message)) return;
-        const ticketHeadMessage = this.ticketList.get(reaction.message);
+        //if(!this.ticketList.has(reaction.message)) return;
+        if(!this.ticketList.includes(reaction.message)) return;
+        const ticketHeadMessage = this.ticketList.find(message => message === reaction.message);
+        if(ticketHeadMessage == undefined)
+        {
+            console.log("cannot find" + user.name + "channel");
+            return;
+        }
         const ticketChannel = ticketHeadMessage.channel;
         try 
         {
+            this.ticketList = this.ticketList.filter(element => element != ticketChannel);
             ticketChannel.delete();
-            this.ticketList.delete(ticketHeadMessage);
         } catch (error) 
         {
             console.log(error);
