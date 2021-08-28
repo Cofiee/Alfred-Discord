@@ -10,4 +10,5 @@ module.exports = () => {
     const ticketCreator = require("./ticket_system/ticketCreator.json");
     const client = new Discord.Client();
     const channels = client.channels.cache;
+    const https = require('https')
 }
