@@ -15,6 +15,8 @@ const ticketManager = new ticketManagerBuilder(Discord, settings, client, channe
 
 const lonelyMentionsCleaner = require("./mentionsCleaner.js");
 
+const hrManagerBuilder = require("./employment/hrManager.js");
+const hrManager = new hrManagerBuilder(Discord, settings, client, channels);
 /**
  * Przygotowywuje bota do dzialania przed zalogowaniem sie
  * Wczytuje komendy dynamicznie z folderu commands
@@ -35,7 +37,8 @@ const lonelyMentionsCleaner = require("./mentionsCleaner.js");
  * Zestaw procedur wykonywanych po zalogowaniu sie bota
  */
 client.on("ready", () => {
-    ticketManager.prepareTicketSystem();
+    //ticketManager.prepareTicketSystem();
+    hrManager.prepareHRchannel();
     console.log("I am ready!");
 });
 
